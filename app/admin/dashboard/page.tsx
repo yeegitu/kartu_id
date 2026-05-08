@@ -22,7 +22,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Ambil data cards dari API
   useEffect(() => {
     fetchCards();
   }, []);
@@ -54,6 +53,11 @@ export default function AdminDashboard() {
     router.push(`/admin/edit-card/${idCard}`);
   };
 
+  const handleViewCard = (idCard: string) => {
+    // Buka halaman public card di tab baru
+    window.open(`/card/${idCard}`, "_blank");
+  };
+
   const handleDelete = async (idCard: string) => {
     if (!confirm("Apakah Anda yakin ingin menghapus card ini?")) return;
 
@@ -64,7 +68,7 @@ export default function AdminDashboard() {
       const data = await response.json();
       if (data.success) {
         alert("Card berhasil dihapus");
-        fetchCards(); // Refresh daftar card
+        fetchCards();
       } else {
         alert("Gagal menghapus card");
       }
@@ -74,15 +78,13 @@ export default function AdminDashboard() {
     }
   };
 
-  // Filter cards berdasarkan search
   const filteredCards = cards.filter(
     (card) =>
       card.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
       card.idCard.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      card.pekerjaan.toLowerCase().includes(searchTerm.toLowerCase()),
+      card.pekerjaan.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Format tanggal
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("id-ID", {
@@ -94,7 +96,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
       <nav className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -106,7 +107,6 @@ export default function AdminDashboard() {
                 Dashboard Admin
               </h1>
             </div>
-
             <div className="flex items-center gap-3">
               <button
                 onClick={handleBuatCard}
@@ -125,9 +125,7 @@ export default function AdminDashboard() {
         </div>
       </nav>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header dengan Search */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Daftar ID Card</h2>
@@ -135,8 +133,6 @@ export default function AdminDashboard() {
               Total {filteredCards.length} card
             </p>
           </div>
-
-          {/* Search Bar */}
           <div className="relative">
             <input
               type="text"
@@ -161,7 +157,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-20">
             <div className="text-center">
@@ -171,7 +166,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Grid Cards */}
         {!loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCards.map((card) => (
@@ -179,15 +173,11 @@ export default function AdminDashboard() {
                 key={card._id}
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden"
               >
-                {/* Card Preview Mini */}
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2">
                   <p className="text-white text-xs font-semibold">ID CARD</p>
                 </div>
-
                 <div className="p-4">
                   <div className="flex gap-3">
-                    {/* Foto */}
-                    {/* Foto */}
                     <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                       {card.fotoUrl &&
                       card.fotoUrl.startsWith("http") &&
@@ -203,8 +193,6 @@ export default function AdminDashboard() {
                         </div>
                       )}
                     </div>
-
-                    {/* Data */}
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-800 truncate">
                         {card.nama}
@@ -217,8 +205,6 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                   </div>
-
-                  {/* Detail tambahan */}
                   <div className="mt-3 pt-3 border-t text-xs text-gray-500 space-y-1">
                     <div className="flex justify-between">
                       <span>📧 {card.email || "-"}</span>
@@ -229,20 +215,25 @@ export default function AdminDashboard() {
                       <span>⏰ Expire: {formatDate(card.expireDate)}</span>
                     </div>
                   </div>
-
-                  {/* Tombol Aksi */}
+                  {/* Tombol Aksi dengan 3 tombol */}
                   <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={() => handleViewCard(card.idCard)}
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-1.5 rounded-lg transition"
+                    >
+                      👁️ Lihat Card
+                    </button>
                     <button
                       onClick={() => handleEdit(card.idCard)}
                       className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium py-1.5 rounded-lg transition"
                     >
-                      Edit
+                      ✏️ Edit
                     </button>
                     <button
                       onClick={() => handleDelete(card.idCard)}
                       className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1.5 rounded-lg transition"
                     >
-                      Hapus
+                      🗑️ Hapus
                     </button>
                   </div>
                 </div>
@@ -251,7 +242,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* No Data State */}
         {!loading && filteredCards.length === 0 && (
           <div className="text-center py-20 bg-white rounded-xl">
             <div className="text-6xl mb-4">📇</div>
