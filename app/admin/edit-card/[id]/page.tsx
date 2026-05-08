@@ -94,6 +94,20 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
     }
   };
 
+  // Format tanggal ke DD/MM/YYYY
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()}`;
+  };
+
+  // Generate QR Code URL berdasarkan ID Card yang sudah ada
+  const qrCodeUrl = formData?.idCard
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
+        `${window.location.origin}/card/${formData.idCard}`
+      )}`
+    : null;
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -144,160 +158,219 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
       </nav>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">
-            Edit Data Karyawan
-          </h2>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Form Edit */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">
+              Edit Data Karyawan
+            </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Preview Foto (readonly untuk sekarang) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Foto Profile
-              </label>
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gray-100 rounded-lg border overflow-hidden">
-                  {formData.fotoUrl ? (
-                    <img
-                      src={formData.fotoUrl}
-                      alt={formData.nama}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
-                      👤
-                    </div>
-                  )}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Preview Foto */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Foto Profile
+                </label>
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 bg-gray-100 rounded-lg border overflow-hidden">
+                    {formData.fotoUrl ? (
+                      <img
+                        src={formData.fotoUrl}
+                        alt={formData.nama}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
+                        👤
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    Foto tidak bisa diubah dari sini. Hapus card dan buat ulang untuk mengganti foto.
+                  </p>
                 </div>
-                <p className="text-sm text-gray-500">
-                  Foto tidak bisa diubah dari sini. Hapus card dan buat ulang untuk mengganti foto.
+              </div>
+
+              {/* Nama */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Lengkap <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="nama"
+                  value={formData.nama}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  required
+                />
+              </div>
+
+              {/* Pekerjaan */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Pekerjaan <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="pekerjaan"
+                  value={formData.pekerjaan}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  required
+                />
+              </div>
+
+              {/* ID Card (readonly) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nomor ID Card
+                </label>
+                <input
+                  type="text"
+                  value={formData.idCard}
+                  disabled
+                  className="w-full px-4 py-2 border border-gray-200 bg-gray-50 rounded-lg text-gray-500 cursor-not-allowed"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  ID Card tidak dapat diubah karena digunakan untuk QR Code.
                 </p>
               </div>
-            </div>
 
-            {/* Nama */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nama Lengkap <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="nama"
-                value={formData.nama}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                required
-              />
-            </div>
-
-            {/* Pekerjaan */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pekerjaan <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="pekerjaan"
-                value={formData.pekerjaan}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                required
-              />
-            </div>
-
-            {/* ID Card (readonly, tidak bisa diubah) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nomor ID Card
-              </label>
-              <input
-                type="text"
-                value={formData.idCard}
-                disabled
-                className="w-full px-4 py-2 border border-gray-200 bg-gray-50 rounded-lg text-gray-500 cursor-not-allowed"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                ID Card tidak dapat diubah karena digunakan untuk QR Code.
-              </p>
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                E-mail
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email || ""}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone || ""}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </div>
-
-            {/* Join Date & Expire Date */}
-            <div className="grid grid-cols-2 gap-4">
+              {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Join Date <span className="text-red-500">*</span>
+                  E-mail
                 </label>
                 <input
-                  type="date"
-                  name="joinDate"
-                  value={formData.joinDate ? formData.joinDate.split("T")[0] : ""}
+                  type="email"
+                  name="email"
+                  value={formData.email || ""}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  required
                 />
               </div>
+
+              {/* Phone */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Expire Date <span className="text-red-500">*</span>
+                  Phone
                 </label>
                 <input
-                  type="date"
-                  name="expireDate"
-                  value={formData.expireDate ? formData.expireDate.split("T")[0] : ""}
+                  type="tel"
+                  name="phone"
+                  value={formData.phone || ""}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  required
                 />
+              </div>
+
+              {/* Join Date & Expire Date */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Join Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="joinDate"
+                    value={formData.joinDate ? formData.joinDate.split("T")[0] : ""}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Expire Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="expireDate"
+                    value={formData.expireDate ? formData.expireDate.split("T")[0] : ""}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50"
+                >
+                  {saving ? "Menyimpan..." : "Simpan Perubahan"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/admin/dashboard")}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg transition"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Preview QR Code */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">
+              Preview QR Code
+            </h2>
+            
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-4">
+                  QR Code untuk ID Card ini:
+                </p>
+                {qrCodeUrl ? (
+                  <div className="inline-block bg-white p-4 rounded-xl shadow-md">
+                    <img
+                      src={qrCodeUrl}
+                      alt="QR Code"
+                      className="w-48 h-48 mx-auto"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-48 h-48 mx-auto bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
+                    QR Code tidak tersedia
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-4 break-all">
+                  {`${window.location.origin}/card/${formData.idCard}`}
+                </p>
+                <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-xs text-yellow-700">
+                    📌 <span className="font-semibold">Info:</span> QR Code ini akan mengarah ke halaman publik card. 
+                    Scan dengan HP untuk verifikasi data karyawan.
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex gap-3 pt-4">
-              <button
-                type="submit"
-                disabled={saving}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50"
-              >
-                {saving ? "Menyimpan..." : "Simpan Perubahan"}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push("/admin/dashboard")}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg transition"
-              >
-                Batal
-              </button>
+            {/* Preview Ringkasan Card */}
+            <div className="mt-6 bg-gray-50 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-700 mb-3">Ringkasan ID Card:</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Nama:</span>
+                  <span className="font-medium">{formData.nama}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">ID Card:</span>
+                  <span className="font-medium">{formData.idCard}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Masa Berlaku:</span>
+                  <span className="font-medium">{formatDate(formData.joinDate)} - {formatDate(formData.expireDate)}</span>
+                </div>
+              </div>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

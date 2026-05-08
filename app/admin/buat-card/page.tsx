@@ -105,10 +105,10 @@ export default function BuatCardPage() {
 
   // Generate preview QR Code URL
   const qrCodeUrl = formData.idCard
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
-        `https://kartuid.com/card/${formData.idCard}`,
-      )}`
-    : null;
+  ? `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
+      `${window.location.origin}/card/${formData.idCard}`
+    )}`
+  : null;
 
   // Format tanggal ke MM/DD/YYYY
   const formatDate = (dateString: string) => {
