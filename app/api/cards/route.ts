@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     // Generate QR Code URL
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "https://kartuid.com"}/card/${body.idCard}`
+      `${process.env.NEXT_PUBLIC_BASE_URL || "https://ratuputri.vercel.app"}/card/${body.idCard}`
     )}`;
 
     const cardData = {

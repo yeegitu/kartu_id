@@ -16,7 +16,11 @@ interface CardData {
   fotoPublicId: string;
 }
 
-export default function EditCardPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditCardPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -104,7 +108,7 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
   // Generate QR Code URL berdasarkan ID Card yang sudah ada
   const qrCodeUrl = formData?.idCard
     ? `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
-        `${window.location.origin}/card/${formData.idCard}`
+        `${window.location.origin}/card/${formData.idCard}`,
       )}`
     : null;
 
@@ -140,16 +144,20 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
       {/* Navbar */}
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">ID</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xs sm:text-sm">
+                  ID
+                </span>
               </div>
-              <h1 className="text-xl font-semibold text-gray-800">Edit ID Card</h1>
+              <h1 className="text-base sm:text-xl font-semibold text-gray-800">
+                Edit ID Card
+              </h1>
             </div>
             <button
               onClick={() => router.push("/admin/dashboard")}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+              className="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition"
             >
               Batal
             </button>
@@ -187,7 +195,8 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
                     )}
                   </div>
                   <p className="text-sm text-gray-500">
-                    Foto tidak bisa diubah dari sini. Hapus card dan buat ulang untuk mengganti foto.
+                    Foto tidak bisa diubah dari sini. Hapus card dan buat ulang
+                    untuk mengganti foto.
                   </p>
                 </div>
               </div>
@@ -275,7 +284,9 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
                   <input
                     type="date"
                     name="joinDate"
-                    value={formData.joinDate ? formData.joinDate.split("T")[0] : ""}
+                    value={
+                      formData.joinDate ? formData.joinDate.split("T")[0] : ""
+                    }
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     required
@@ -288,7 +299,11 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
                   <input
                     type="date"
                     name="expireDate"
-                    value={formData.expireDate ? formData.expireDate.split("T")[0] : ""}
+                    value={
+                      formData.expireDate
+                        ? formData.expireDate.split("T")[0]
+                        : ""
+                    }
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     required
@@ -321,7 +336,7 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
             <h2 className="text-xl font-bold text-gray-800 mb-6">
               Preview QR Code
             </h2>
-            
+
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-4">
@@ -345,8 +360,9 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
                 </p>
                 <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                   <p className="text-xs text-yellow-700">
-                    📌 <span className="font-semibold">Info:</span> QR Code ini akan mengarah ke halaman publik card. 
-                    Scan dengan HP untuk verifikasi data karyawan.
+                    📌 <span className="font-semibold">Info:</span> QR Code ini
+                    akan mengarah ke halaman publik card. Scan dengan HP untuk
+                    verifikasi data karyawan.
                   </p>
                 </div>
               </div>
@@ -354,7 +370,9 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
 
             {/* Preview Ringkasan Card */}
             <div className="mt-6 bg-gray-50 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-700 mb-3">Ringkasan ID Card:</h3>
+              <h3 className="font-semibold text-gray-700 mb-3">
+                Ringkasan ID Card:
+              </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Nama:</span>
@@ -366,7 +384,10 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Masa Berlaku:</span>
-                  <span className="font-medium">{formatDate(formData.joinDate)} - {formatDate(formData.expireDate)}</span>
+                  <span className="font-medium">
+                    {formatDate(formData.joinDate)} -{" "}
+                    {formatDate(formData.expireDate)}
+                  </span>
                 </div>
               </div>
             </div>
